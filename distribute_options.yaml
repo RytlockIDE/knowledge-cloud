@@ -1,0 +1,36 @@
+# flutter_distributor 打包配置
+# 用法（在对应平台机器上执行）：
+#   dart global activate flutter_distributor
+#   flutter_distributor release --name=linux-deb
+#   flutter_distributor release --name=linux-appimage
+#   flutter_distributor package --name=windows-msix
+env:
+  FLUTTER_DIST:
+    sdk: ""
+output: dist/
+releases:
+  linux-deb:
+    jobs:
+      - name: build-deb
+        package:
+          platform: linux
+          target: deb
+          build_args:
+            - "--release"
+  linux-appimage:
+    jobs:
+      - name: build-appimage
+        package:
+          platform: linux
+          target: AppImage
+          build_args:
+            - "--release"
+        # AppImage 制作依赖 appimagetool，需提前放入 PATH
+  windows-msix:
+    jobs:
+      - name: build-msix
+        package:
+          platform: windows
+          target: msix
+          build_args:
+            - "--release"
