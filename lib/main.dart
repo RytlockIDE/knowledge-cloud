@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pdfrx/pdfrx.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'domain/reward/reward_service.dart';
@@ -10,6 +11,9 @@ import 'app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // pdfrx 在未构建其组件时直接调用文档 API 所需的初始化
+  pdfrxFlutterInitialize();
 
   await windowManager.ensureInitialized();
   const windowOptions = WindowOptions(

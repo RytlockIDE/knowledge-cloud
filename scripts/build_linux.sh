@@ -8,7 +8,7 @@ set -e
 
 APP_NAME="知识云"
 APP_ID="knowledge_cloud"
-VERSION="1.0.0"
+VERSION="1.0.1"
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
@@ -60,6 +60,7 @@ Section: education
 Priority: optional
 Architecture: amd64
 Installed-Size: $INSTALLED_SIZE
+Depends: libsecret-1-0 (>= 0.18.4), libgtk-3-0 (>= 3.22.0)
 Maintainer: KnowledgeCloud
 Description: 知识云 - 面向学生的本地知识云专家系统
  混合算力（Ollama 本地 + 云端 API）、可迭代知识云图、

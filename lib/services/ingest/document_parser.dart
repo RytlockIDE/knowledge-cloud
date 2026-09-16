@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:pdfrx/pdfrx.dart';
@@ -35,7 +34,9 @@ class DocumentParser {
       final buf = StringBuffer();
       for (final page in doc.pages) {
         final pageText = await page.loadText();
-        buf.writeln(pageText.fullText);
+        if (pageText != null) {
+          buf.writeln(pageText.fullText);
+        }
       }
       return buf.toString();
     } finally {
@@ -51,7 +52,7 @@ class DocumentParser {
     if (entry == null) {
       throw const FormatException('无效的 docx：缺少 word/document.xml');
     }
-    final xml = utf8.decode(entry.content as Uint8List, allowMalformed: true);
+    final xml = utf8.decode(entry.content, allowMalformed: true);
     return _stripWordXml(xml);
   }
 

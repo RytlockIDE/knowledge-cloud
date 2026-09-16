@@ -5,7 +5,7 @@
 set -e
 
 APP_NAME="知识云"
-VERSION="1.0.0"
+VERSION="1.0.1"
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
