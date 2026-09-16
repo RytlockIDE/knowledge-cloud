@@ -8,7 +8,7 @@ set -e
 
 APP_NAME="知识云"
 APP_ID="knowledge_cloud"
-VERSION="1.0.1"
+VERSION="1.0.2"
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
@@ -51,10 +51,10 @@ Type=Application
 Categories=Education;
 EOF
 
-# deb 控制信息
+# deb 控制信息（包名只允许小写字母/数字/-+.，下划线非法）
 INSTALLED_SIZE="$(du -sk "$DEB_ROOT/opt" | cut -f1)"
 cat > "$DEB_ROOT/DEBIAN/control" <<EOF
-Package: $APP_ID
+Package: knowledge-cloud
 Version: $VERSION
 Section: education
 Priority: optional

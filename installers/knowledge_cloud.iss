@@ -2,10 +2,10 @@
 ; 编译方式：
 ;   1) flutter build windows --release
 ;   2) ISCC.exe installers\knowledge_cloud.iss
-; 生成：installers\Output\知识云-安装程序-v1.0.1.exe
+; 生成：installers\Output\知识云-安装程序-v1.0.2.exe
 
 #define MyAppName "知识云"
-#define MyAppVersion "1.0.1"
+#define MyAppVersion "1.0.2"
 #define MyAppPublisher "KnowledgeCloud"
 #define MyAppExeName "knowledge_cloud.exe"
 #define BuildDir "..\build\windows\x64\runner\Release"

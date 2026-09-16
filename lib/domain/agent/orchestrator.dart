@@ -113,13 +113,19 @@ class AgentOrchestrator {
       return doc.parsedText;
     }
 
-    // 自主抓取：维基百科
+    // 自主抓取：维基百科（受限网络时 AI 兜底）
     final topic = crawlTopic ?? '';
     if (topic.isEmpty) throw const AppException('抓取主题为空');
     final buf = StringBuffer();
     final main = await _wiki.fetchSummary(topic);
     if (main == null) {
-      throw AppException('维基百科未找到主题「$topic」');
+      if (!await _wiki.isReachable()) {
+        // 维基百科无法访问（如大陆网络受限）→ 由 LLM 生成主题材料
+        final fallback = await _llmCrawlMaterial(jobId, topic);
+        if (fallback != null) return fallback;
+        throw const AppException('维基百科无法访问，且 AI 兜底不可用（请检查网络与模型配置）');
+      }
+      throw AppException('维基百科未找到主题「$topic」，请换个说法重试');
     }
     buf.writeln(main.extract);
     final fullText = await _wiki.fetchPlainText(topic);
@@ -136,6 +142,40 @@ class AgentOrchestrator {
         jobId,
         payload: {'topic': topic, 'material_chars': material.length});
     return material;
+  }
+
+  /// 维基不可达时的 AI 兜底抓取：由 LLM 生成百科式主题材料。
+  Future<String?> _llmCrawlMaterial(String jobId, String topic) async {
+    try {
+      final router = ref.read(llmRouterProvider);
+      final text = await router.complete(ChatRequest(
+        taskKind: TaskKind.crawlSummarize,
+        temperature: 0.4,
+        maxTokens: 2000,
+        messages: [
+          const ChatMessage(
+              'system', '你是严谨的百科资料员，只输出客观事实，不编造不确定的内容。'),
+          ChatMessage(
+              'user',
+              '请围绕主题「$topic」为学生生成构建知识云所需的百科材料，要求：\n'
+                  '1. 先给一段 200 字左右的概述（定义与定位）；\n'
+                  '2. 再分点列出 6-10 个核心概念/子主题，每个配 1-2 句说明；\n'
+                  '3. 指出该主题与哪些邻近领域相关；\n'
+                  '4. 用中文输出，直接给正文，不要客套话。'),
+        ],
+      ));
+      if (text.trim().length < 50) return null;
+      await _updateJob(
+          jobId,
+          payload: {
+            'topic': topic,
+            'material_chars': text.length,
+            'source': 'llm',
+          });
+      return text;
+    } on AppException {
+      return null;
+    }
   }
 
   // ───────────────────────── 阶段二：迭代 ─────────────────────────

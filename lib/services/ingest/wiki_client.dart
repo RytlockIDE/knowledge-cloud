@@ -15,6 +15,16 @@ class WikiClient {
     ),
   );
 
+  /// 官方端点连通性探测：区分「网络受限」与「主题不存在」。
+  Future<bool> isReachable() async {
+    try {
+      final res = await _dio.get<dynamic>('/page/summary/Wikipedia');
+      return res.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// 主题摘要。
   Future<WikiPage?> fetchSummary(String title) async {
     try {
